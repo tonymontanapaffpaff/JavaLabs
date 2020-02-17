@@ -52,38 +52,6 @@ public class Employee {
         return total;
     }
 
-    public static int initialTrips(Employee[] employee) {
-        int duration = 0;
-        for (int i = 0; i < employee.length; i++) {
-            if (employee[i] != null) {
-            for (int j = i + 1; j < employee.length; j++) {
-                if (employee[j] != null) {
-                    if (employee[i].toString().equals(employee[j].toString())) duration = employee[i].getDays();
-                }
-            }
-            }
-        }
-        return duration;
-    }
-
-    public static int totalExpenses(Employee[] employee) {
-        int total = 0;
-        for (Employee item : employee) {
-            if (item != null)
-                total += item.getTotal();
-        }
-        return total;
-    }
-
-    public static String maximumTotal(Employee[] employee) {
-        Employee maximum = employee[0];
-        for (Employee item : employee) {
-            if (item != null)
-                if (item.getTotal() > maximum.getTotal()) maximum = item;
-        }
-        return maximum.getAccount();
-    }
-
     public void show() {
         System.out.println("rate = " + RATE);
         System.out.println("account = " + account);
