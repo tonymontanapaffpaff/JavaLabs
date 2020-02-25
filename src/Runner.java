@@ -4,6 +4,7 @@ import by.gsu.pms.WeekDay;
 import by.gsu.pms.Purchase;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 
 public class Runner {
@@ -30,14 +31,14 @@ public class Runner {
         for (Purchase item : purchase)
             if (item != null)
                 cost = cost.add(item.getTotal());
-        return cost.divide(BigDecimal.valueOf(purchase.length));
+        return cost.divide(BigDecimal.valueOf(purchase.length), RoundingMode.HALF_UP);
     }
 
     public static void main(String[] args) {
         Purchase[] purchase = new Purchase[7];
         purchase[0] = new Purchase(2.52, "Banana", WeekDay.MONDAY, 10);
         purchase[1] = new Purchase(1.566, "Apple", WeekDay.FRIDAY, 20);
-        purchase[2] = new Purchase();
+        purchase[2] = new Purchase(1.23, "Lemon", WeekDay.THURSDAY, 3);
         purchase[3] = new Purchase(4.23, "Pineapple", WeekDay.TUESDAY, 5);
         purchase[4] = new Purchase(2.366, "Orange", WeekDay.WEDNESDAY, 15);
         purchase[5] = new Purchase(5.28, "Mango", WeekDay.SATURDAY, 8);
