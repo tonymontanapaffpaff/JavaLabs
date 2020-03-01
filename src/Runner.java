@@ -3,20 +3,6 @@ import java.math.BigDecimal;
 
 public class Runner {
 
-    private static int initialTrips(Employee[] employee) {
-        int duration = 0;
-        for (int i = 0; i < employee.length; i++) {
-            if (employee[i] != null) {
-                for (int j = i + 1; j < employee.length; j++) {
-                    if (employee[j] != null) {
-                        if (employee[i].toString().equals(employee[j].toString())) duration = employee[i].getDays();
-                    }
-                }
-            }
-        }
-        return duration;
-    }
-
     private static BigDecimal totalExpenses(Employee[] employee) {
         BigDecimal total = new BigDecimal("0");
         for (Employee item : employee) {
@@ -50,7 +36,7 @@ public class Runner {
 
         employee[6].setTransport(300, 2.21, 2);
 
-        System.out.println("Duration = " + initialTrips(employee));
+        System.out.println("Duration = " + (employee[0].getDays() + employee[1].getDays()));
 
         for (Employee item : employee) {
             System.out.println(item);
