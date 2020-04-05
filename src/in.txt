@@ -1,0 +1,10 @@
+Phillips 23 0
+Scott 18 0
+Bailey 28 1
+Flores 40 1
+Gray 46 0
+Parker 17 0
+Bryant 24 0
+Morgan 13 1
+Evans 76 1
+Walker 58 0
