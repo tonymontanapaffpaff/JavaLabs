@@ -57,5 +57,5 @@ public class Runner {
         System.out.println("Sorted by surname:");
         for (Person item : person)
             System.out.println(item);
-    }
+    }      
 }
