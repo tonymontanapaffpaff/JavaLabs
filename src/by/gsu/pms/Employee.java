@@ -1,30 +1,28 @@
 package by.gsu.pms;
 
+import java.math.BigDecimal;
+
 public class Employee {
-    private final static int RATE = 25000;
+    public final static Converter RATE = new Converter(250, 2.21, 2);
     private String account;
-    private int transport;
+    private Converter transport;
     private int days;
 
-    public Employee(String account, int transport, int days) {
+    public Employee(String account, double beforeConvert, double divider, int numberPlaces, int days) {
         this.account = account;
-        this.transport = transport;
+        this.transport = new Converter(beforeConvert, divider, numberPlaces);
         this.days = days;
     }
 
     public Employee() {
     }
 
-    public int getRate() {
-        return RATE;
-    }
-
     public String getAccount() {
         return account;
     }
 
-    public int getTransport() {
-        return transport;
+    public BigDecimal getTransport() {
+        return transport.getCurrency();
     }
 
     public int getDays() {
@@ -35,65 +33,35 @@ public class Employee {
         this.account = account;
     }
 
-    public void setTransport(int transport) {
-        this.transport = transport;
+    public void setTransport(double beforeConvert, double divider, int numberPlaces) {
+        this.transport = new Converter(beforeConvert, divider, numberPlaces);
     }
 
     public void setDays(int days) {
         this.days = days;
     }
 
-    public int getTotal() {
-        int total = 0;
+    public BigDecimal getTotal() {
+        BigDecimal total =  new BigDecimal("0");
         if (days > 1)
-            total = RATE * days + transport;
+            total = RATE.getCurrency().multiply(BigDecimal.valueOf(days)).add(transport.getCurrency());
         else if (days == 1)
-            total = transport;
+            total = transport.getCurrency();
         return total;
-    }
-
-    public static int initialTrips(Employee[] employee) {
-        int duration = 0;
-        for (int i = 0; i < employee.length; i++) {
-            if (employee[i] != null) {
-            for (int j = i + 1; j < employee.length; j++) {
-                if (employee[j] != null) {
-                    if (employee[i].toString().equals(employee[j].toString())) duration = employee[i].getDays();
-                }
-            }
-            }
-        }
-        return duration;
-    }
-
-    public static int totalExpenses(Employee[] employee) {
-        int total = 0;
-        for (Employee item : employee) {
-            if (item != null)
-                total += item.getTotal();
-        }
-        return total;
-    }
-
-    public static String maximumTotal(Employee[] employee) {
-        Employee maximum = employee[0];
-        for (Employee item : employee) {
-            if (item != null)
-                if (item.getTotal() > maximum.getTotal()) maximum = item;
-        }
-        return maximum.getAccount();
     }
 
     public void show() {
-        System.out.println("rate = " + RATE);
-        System.out.println("account = " + account);
-        System.out.println("transport = " + transport);
-        System.out.println("days = " + days);
-        System.out.println("total = " + getTotal());
+        if (transport != null) {
+            System.out.println("rate = " + RATE.getCurrency());
+            System.out.println("account = " + account);
+            System.out.println("transport = " + transport.getCurrency());
+            System.out.println("days = " + days);
+            System.out.println("total = " + getTotal());
+        }
     }
 
     @Override
     public String toString() {
-        return RATE + ";" + account + ";" + transport + ";" + days + ";" + getTotal();
+        return RATE.getCurrency() + ";" + account + ";" + transport.getCurrency() + ";" + days + ";" + getTotal();
     }
 }
