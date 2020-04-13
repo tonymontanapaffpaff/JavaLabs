@@ -1,49 +1,61 @@
-import by.gsu.pms.Employee;
-import java.math.BigDecimal;
+import by.gsu.pms.Gender;
+import by.gsu.pms.Person;
+import by.gsu.pms.SortedBySurname;
+
+import java.util.Arrays;
 
 public class Runner {
 
-    private static BigDecimal totalExpenses(Employee[] employee) {
-        BigDecimal total = new BigDecimal("0");
-        for (Employee item : employee) {
-            if (item != null)
-                total = total.add(item.getTotal());
-        }
-        return total;
+    private static double averageAge(Person[] person) {
+        double result = 0;
+        for (Person item : person)
+            result += item.getAge();
+        return result / person.length;
     }
 
-    private static String maximumTotal(Employee[] employee) {
-        Employee maximum = employee[0];
-        for (Employee item : employee) {
-            if (item != null)
-                if (item.getTotal().equals(item.getTotal().max(maximum.getTotal()))) maximum = item;
-        }
-        return maximum.getAccount();
+    private static int numberOfMen(Person[] person) {
+        int result = 0;
+        for (Person item : person)
+            if (item.getGender().equals(Gender.MALE)) result++;
+        return result;
     }
 
     public static void main(String[] args) {
-        Employee[] employee = new Employee[7];
-        employee[0] = new Employee("Siroga Krasiviy", 800, 2.21, 2, 1);
-        employee[1] = new Employee( "Yarik Starik", 600, 2.21, 2, 7);
-        employee[3] = new Employee( "Romka Kovbasa", 300, 2.21, 2, 21);
-        employee[4] = new Employee( "Drozdik Pashkevich", 750, 2.21, 2, 3);
-        employee[5] = new Employee( "Yarik Starik", 600, 2.21, 2, 7);
-        employee[6] = new Employee();
+        Person[] person = new Person[10];
+        person[0] = new Person("Zabuzko", 16, Gender.MALE);
+        person[1] = new Person("Hishnyak", 25, Gender.MALE);
+        person[2] = new Person("Butler", 42, Gender.FEMALE);
+        person[3] = new Person("Susarenko", 31, Gender.MALE);
+        person[4] = new Person("Kovalev", 23, Gender.MALE);
+        person[5] = new Person("Bell", 20, Gender.FEMALE);
+        person[6] = new Person("Nedbaylo", 17, Gender.MALE);
+        person[7] = new Person("Bryant", 26, Gender.FEMALE);
+        person[8] = new Person("Torres", 22, Gender.FEMALE);
+        person[9] = new Person("Lewis", 17, Gender.FEMALE);
 
-        for (Employee item : employee) {
-            if (item != null) item.show();
-        }
+        for (Person item : person)
+            item.show();
 
-        employee[6].setTransport(300, 2.21, 2);
-
-        System.out.println("Duration = " + (employee[0].getDays() + employee[1].getDays()));
-
-        for (Employee item : employee) {
+        System.out.println();
+        for (Person item : person)
             System.out.println(item);
-        }
 
-        System.out.println(totalExpenses(employee));
-        System.out.println(maximumTotal(employee));
+        System.out.println();
+        System.out.println("Average age = " + averageAge(person));
+        System.out.println("Number of men = " + numberOfMen(person));
 
-    }
+        Arrays.sort(person);
+
+        System.out.println();
+        System.out.println("Sorted by age:");
+        for (Person item : person)
+            System.out.println(item);
+
+        Arrays.sort(person, new SortedBySurname());
+
+        System.out.println();
+        System.out.println("Sorted by surname:");
+        for (Person item : person)
+            System.out.println(item);
+    }      
 }
