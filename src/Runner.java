@@ -1,49 +1,67 @@
-import by.gsu.pms.Employee;
-import java.math.BigDecimal;
+import by.gsu.pms.Deserialization;
+import by.gsu.pms.Gender;
+import by.gsu.pms.Person;
+import by.gsu.pms.Serialization;
+
+import java.io.*;
+import java.util.Locale;
+import java.util.Scanner;
 
 public class Runner {
 
-    private static BigDecimal totalExpenses(Employee[] employee) {
-        BigDecimal total = new BigDecimal("0");
-        for (Employee item : employee) {
-            if (item != null)
-                total = total.add(item.getTotal());
+    private static void print(Person[] people) {
+        for (Person person : people) {
+            System.out.println(person);
         }
-        return total;
-    }
-
-    private static String maximumTotal(Employee[] employee) {
-        Employee maximum = employee[0];
-        for (Employee item : employee) {
-            if (item != null)
-                if (item.getTotal().equals(item.getTotal().max(maximum.getTotal()))) maximum = item;
-        }
-        return maximum.getAccount();
     }
 
     public static void main(String[] args) {
-        Employee[] employee = new Employee[7];
-        employee[0] = new Employee("Siroga Krasiviy", 800, 2.21, 2, 1);
-        employee[1] = new Employee( "Yarik Starik", 600, 2.21, 2, 7);
-        employee[3] = new Employee( "Romka Kovbasa", 300, 2.21, 2, 21);
-        employee[4] = new Employee( "Drozdik Pashkevich", 750, 2.21, 2, 3);
-        employee[5] = new Employee( "Yarik Starik", 600, 2.21, 2, 7);
-        employee[6] = new Employee();
+        final String INPUT = "src/in.txt";
+        final int PERSONS_NUMBER = 10;
+        Scanner sc = null;
+        try {
+            sc = new Scanner(new FileReader(INPUT));
+            sc.useLocale(Locale.ENGLISH);
+            Person[] people = new Person[PERSONS_NUMBER];
+            double totalAge = 0;
+            int maleNumber = 0;
 
-        for (Employee item : employee) {
-            if (item != null) item.show();
+            for (int i = 0; i < people.length; i++) {
+                String surname = sc.next();
+                int age = sc.nextInt();
+                int sex = sc.nextInt();
+                people[i] = new Person(surname, age, sex);
+            }
+
+            print(people);
+
+            Serialization serialization = new Serialization();
+            serialization.serialization(people);
+
+            Person[] newPeople;
+            Deserialization deserialization = new Deserialization();
+            newPeople = deserialization.deserialization();
+
+            System.out.println();
+            System.out.println("After serialization:");
+            print(newPeople);
+
+            for (Person person : newPeople) {
+                totalAge += person.getAge();
+                if (person.getSex() == Gender.MALE) {
+                    maleNumber++;
+                }
+            }
+
+            System.out.println();
+            System.out.println("The average age is " + totalAge / PERSONS_NUMBER);
+            System.out.println("The number of men is " + maleNumber);
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("File doesn't exist");
+        } finally {
+            if (sc != null) {
+                sc.close();
+            }
         }
-
-        employee[6].setTransport(300, 2.21, 2);
-
-        System.out.println("Duration = " + (employee[0].getDays() + employee[1].getDays()));
-
-        for (Employee item : employee) {
-            System.out.println(item);
-        }
-
-        System.out.println(totalExpenses(employee));
-        System.out.println(maximumTotal(employee));
-
     }
 }
