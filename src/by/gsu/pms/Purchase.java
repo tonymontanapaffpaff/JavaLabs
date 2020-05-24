@@ -1,76 +1,77 @@
 package by.gsu.pms;
 
-import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.Scanner;
 
 public class Purchase implements Comparable<Purchase> {
-    private Currency cost;
     private String name;
-    private WeekDay day;
-    private int count;
-
-    public Purchase(double cost, String name, WeekDay day, int count) {
-        this.cost = new Currency(cost);
-        this.name = name;
-        this.day = day;
-        this.count = count;
-    }
+    private Byn price;
+    private int unitsNumber;
 
     public Purchase() {
     }
 
-    public BigDecimal getCost() {
-        return cost.getCurrency();
+    public Purchase(String name, Byn price, int numberUnits) {
+        this.name = name;
+        this.price = price;
+        this.unitsNumber = numberUnits;
+    }
+
+    public Purchase(Scanner sc) {
+        this.name = sc.next();
+        this.price = new Byn(sc.nextInt());
+        this.unitsNumber = sc.nextInt();
     }
 
     public String getName() {
         return name;
     }
 
-    public WeekDay getDay() {
-        return day;
+    public Byn getPrice() {
+        return price;
     }
 
-    public int getCount() {
-        return count;
-    }
-
-    public void setCost(double cost) {
-        this.cost = new Currency(cost);
+    public int getUnitsNumber() {
+        return unitsNumber;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setDay(WeekDay day) {
-        this.day = day;
+    public void setPrice(Byn price) {
+        this.price = price;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setUnitsNumber(int unitsNumber) {
+        this.unitsNumber = unitsNumber;
     }
 
-    public BigDecimal getTotal() {
-        return cost.getCurrency().multiply(BigDecimal.valueOf(count));
+    public Byn getCost() {
+        Byn total = new Byn(price);
+        return total.mul(unitsNumber);
     }
 
-    public void show() {
-        if (cost != null) {
-            System.out.println("cost = " + cost.getCurrency());
-            System.out.println("name = " + name);
-            System.out.println("day = " + day);
-            System.out.println("count = " + count);
-            System.out.println("total = " + getTotal());
-        }
+    protected String fieldsToString() {
+        return name + ";" + price + ";" + unitsNumber;
     }
 
     @Override
     public String toString() {
-        return cost.getCurrency() + ";" + name + ";" + day + ";" + count + ";" + getTotal();
+        return fieldsToString() + ";" + getCost();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Purchase)) return false;
+        Purchase purchase = (Purchase) obj;
+        return Objects.equals(name, purchase.name)
+                && price.equals(purchase.price);
     }
 
     @Override
     public int compareTo(Purchase purchase) {
-        return Integer.compare(this.count, purchase.count);
+        return getCost().compareTo(purchase.getCost());
     }
 }

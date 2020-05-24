@@ -1,74 +1,77 @@
-import by.gsu.pms.SortedByCost;
-import by.gsu.pms.SortedByName;
-import by.gsu.pms.WeekDay;
+import by.gsu.pms.Byn;
+import by.gsu.pms.PricePurchase;
 import by.gsu.pms.Purchase;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Arrays;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.*;
 
 public class Runner {
 
-    private static WeekDay maxCostDay(Purchase[] purchase) {
-        Purchase maxCost = purchase[0];
-        for (Purchase item : purchase)
-            if (item != null)
-                if (item.getTotal().equals(item.getTotal().max(maxCost.getTotal()))) maxCost = item;
-        return maxCost.getDay();
-    }
-
-    private static BigDecimal mondayCost(Purchase[] purchase) {
-        BigDecimal cost = new BigDecimal(0);
-        for (Purchase item : purchase)
-            if (item != null)
-                if (item.getDay() == WeekDay.MONDAY)
-                    cost = cost.add(item.getTotal());
-        return cost;
-    }
-
-    private static BigDecimal averageCost(Purchase[] purchase) {
-        BigDecimal cost = new BigDecimal(0);
-        for (Purchase item : purchase)
-            if (item != null)
-                cost = cost.add(item.getTotal());
-        return cost.divide(BigDecimal.valueOf(purchase.length), RoundingMode.HALF_UP);
+    private static void printCollection(List<Purchase> list) {
+        for (Purchase purchase : list) {
+            System.out.println(purchase);
+        }
     }
 
     public static void main(String[] args) {
-        Purchase[] purchase = new Purchase[7];
-        purchase[0] = new Purchase(2.52, "Banana", WeekDay.MONDAY, 10);
-        purchase[1] = new Purchase(1.566, "Apple", WeekDay.FRIDAY, 20);
-        purchase[2] = new Purchase(1.23, "Lemon", WeekDay.THURSDAY, 3);
-        purchase[3] = new Purchase(4.23, "Pineapple", WeekDay.TUESDAY, 5);
-        purchase[4] = new Purchase(2.366, "Orange", WeekDay.WEDNESDAY, 15);
-        purchase[5] = new Purchase(5.28, "Mango", WeekDay.SATURDAY, 8);
-        purchase[6] = new Purchase(1.899, "Kiwi", WeekDay.MONDAY, 7);
+        final String INPUT = "src/in.csv";
+        final String SPLIT_LINE = ";";
+        final int PURCHASE_LENGTH = Purchase.class.getDeclaredFields().length;
+        final int PRICE_PURCHASE_LENGTH = PURCHASE_LENGTH + PricePurchase.class.getDeclaredFields().length;
+        final int INDEX_REQUIRED_ELEMENT = 6;
+        final Byn MIN_PRICE = new Byn(10000);
+        Scanner sc = null;
+        try {
+            sc = new Scanner(new FileReader(INPUT));
+            List<Purchase> list = new ArrayList<>();
 
-        for (Purchase item : purchase)
-            if (item != null) item.show();
+            //paragraph 1
+            while (sc.hasNext()) {
+                String[] line = sc.nextLine().split(SPLIT_LINE);
+                if (line.length == PURCHASE_LENGTH) {
+                    list.add(new Purchase(line[0], new Byn(Integer.parseInt(line[1])), Integer.parseInt(line[2])));
+                } else if (line.length == PRICE_PURCHASE_LENGTH) {
+                    list.add(new PricePurchase(line[0], new Byn(Integer.parseInt(line[1])), Integer.parseInt(line[2]), new Byn(Integer.parseInt(line[3]))));
+                }
+            }
 
-        purchase[2].setCost(3.25);
+            //paragraph 2
+            System.out.println("Before sorting: ");
+            printCollection(list);
 
-        for (Purchase item : purchase)
-            System.out.println(item);
+            //paragraph 3
+            System.out.println("Purchase with the index 6: ");
+            System.out.println(list.get(INDEX_REQUIRED_ELEMENT));
 
-        System.out.println(maxCostDay(purchase));
-        System.out.println(mondayCost(purchase));
-        System.out.println(averageCost(purchase));
+            //paragraph 4
+            Iterator<Purchase> iterator = list.iterator();
+            while (iterator.hasNext()) {
+                if (iterator.next().getPrice().compareTo(MIN_PRICE) < 0) {
+                    iterator.remove();
+                }
+            }
 
-        Arrays.sort(purchase);
-        System.out.println("Sorted by count:");
-        for (Purchase item : purchase)
-            System.out.println(item);
+            //paragraph 5
+            System.out.println("After sorting: ");
+            Collections.sort(list);
 
-        Arrays.sort(purchase, new  SortedByCost());
-        System.out.println("Sorted by cost:");
-        for (Purchase item : purchase)
-            System.out.println(item);
+            //paragraph 6
+            printCollection(list);
 
-        Arrays.sort(purchase, new SortedByName());
-        System.out.println("Sorted by name:");
-        for (Purchase item : purchase)
-            System.out.println(item);
+            //paragraph 7
+            PricePurchase requiredPurchase = new PricePurchase("butter", new Byn(35000), 1, new Byn(100));
+            int indexRequiredPurchase = Collections.binarySearch(list, requiredPurchase);
+
+            if (indexRequiredPurchase >= 0) {
+                System.out.println("Required element is " + list.get(indexRequiredPurchase));
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("Input file doesn't exist");
+        } finally {
+            if (sc != null) {
+                sc.close();
+            }
+        }
     }
 }
