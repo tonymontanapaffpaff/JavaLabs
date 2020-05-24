@@ -60,7 +60,7 @@ public class Runner {
             printCollection(list);
 
             //paragraph 7
-            PricePurchase requiredPurchase = new PricePurchase("butter", new Byn(35000), 1, new Byn(100));
+            Purchase requiredPurchase = new Purchase("butter", new Byn(35000), 1);
             int indexRequiredPurchase = Collections.binarySearch(list, requiredPurchase);
 
             if (indexRequiredPurchase >= 0) {
