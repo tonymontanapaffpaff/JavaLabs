@@ -1,74 +1,120 @@
-import by.gsu.pms.SortedByCost;
-import by.gsu.pms.SortedByName;
+import by.gsu.pms.Airline;
+import by.gsu.pms.PlaneType;
+import by.gsu.pms.Utility;
 import by.gsu.pms.WeekDay;
-import by.gsu.pms.Purchase;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Arrays;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
 
 public class Runner {
 
-    private static WeekDay maxCostDay(Purchase[] purchase) {
-        Purchase maxCost = purchase[0];
-        for (Purchase item : purchase)
-            if (item != null)
-                if (item.getTotal().equals(item.getTotal().max(maxCost.getTotal()))) maxCost = item;
-        return maxCost.getDay();
+    private static WeekDay[] getWeekDay(String[] weekDaysLine) {
+        WeekDay[] weekDay = new WeekDay[weekDaysLine.length];
+        for (int i = 0; i < weekDay.length; i++) {
+            if (weekDaysLine[i].equals(WeekDay.MONDAY.name())) {
+                weekDay[i] = WeekDay.MONDAY;
+            }
+            if (weekDaysLine[i].equals(WeekDay.TUESDAY.name())) {
+                weekDay[i] = WeekDay.TUESDAY;
+            }
+            if (weekDaysLine[i].equals(WeekDay.WEDNESDAY.name())) {
+                weekDay[i] = WeekDay.WEDNESDAY;
+            }
+            if (weekDaysLine[i].equals(WeekDay.THURSDAY.name())) {
+                weekDay[i] = WeekDay.THURSDAY;
+            }
+            if (weekDaysLine[i].equals(WeekDay.FRIDAY.name())) {
+                weekDay[i] = WeekDay.FRIDAY;
+            }
+            if (weekDaysLine[i].equals(WeekDay.SATURDAY.name())) {
+                weekDay[i] = WeekDay.SATURDAY;
+            }
+            if (weekDaysLine[i].equals(WeekDay.SUNDAY.name())) {
+                weekDay[i] = WeekDay.SUNDAY;
+            }
+        }
+        return weekDay;
     }
 
-    private static BigDecimal mondayCost(Purchase[] purchase) {
-        BigDecimal cost = new BigDecimal(0);
-        for (Purchase item : purchase)
-            if (item != null)
-                if (item.getDay() == WeekDay.MONDAY)
-                    cost = cost.add(item.getTotal());
-        return cost;
-    }
-
-    private static BigDecimal averageCost(Purchase[] purchase) {
-        BigDecimal cost = new BigDecimal(0);
-        for (Purchase item : purchase)
-            if (item != null)
-                cost = cost.add(item.getTotal());
-        return cost.divide(BigDecimal.valueOf(purchase.length), RoundingMode.HALF_UP);
+    private static void printCollection(List<Airline> list) {
+        for (Airline airline : list) {
+            System.out.println(airline);
+        }
     }
 
     public static void main(String[] args) {
-        Purchase[] purchase = new Purchase[7];
-        purchase[0] = new Purchase(2.52, "Banana", WeekDay.MONDAY, 10);
-        purchase[1] = new Purchase(1.566, "Apple", WeekDay.FRIDAY, 20);
-        purchase[2] = new Purchase(1.23, "Lemon", WeekDay.THURSDAY, 3);
-        purchase[3] = new Purchase(4.23, "Pineapple", WeekDay.TUESDAY, 5);
-        purchase[4] = new Purchase(2.366, "Orange", WeekDay.WEDNESDAY, 15);
-        purchase[5] = new Purchase(5.28, "Mango", WeekDay.SATURDAY, 8);
-        purchase[6] = new Purchase(1.899, "Kiwi", WeekDay.MONDAY, 7);
+        final String INPUT = "src/in.csv";
+        final String OUTPUT = "src/out.csv";
+        final String SPLIT_LINE = ";";
+        final String SPLIT_WEEKDAYS_LINE = ",";
+        Scanner sc = null;
+        try {
+            sc = new Scanner(new FileReader(INPUT));
+            List<Airline> list = new ArrayList<>();
+            while (sc.hasNext()) {
+                String[] line = sc.nextLine().split(SPLIT_LINE);
+                String destination = line[0];
+                int flightNumber = Integer.parseInt(line[1]);
+                PlaneType planeType = PlaneType.values()[Integer.parseInt(line[2])];
+                int departureTime = Integer.parseInt(line[3]);
+                String[] weekDaysLine = line[4].split(SPLIT_WEEKDAYS_LINE);
+                WeekDay[] weekDays = getWeekDay(weekDaysLine);
+                list.add(new Airline(destination, flightNumber, planeType, departureTime, weekDays));
+            }
 
-        for (Purchase item : purchase)
-            if (item != null) item.show();
+            System.out.println("Before sorting:");
+            printCollection(list);
 
-        purchase[2].setCost(3.25);
+            List<Airline> listSearchingDestination = new ArrayList<>();
+            String searchingDestination = "Moscow";
+            List<Airline> listSearchingWeekDay = new ArrayList<>();
+            WeekDay searchingWeekDay = WeekDay.MONDAY;
+            List<Airline> listSearchingWeekDayWithTime = new ArrayList<>();
+            int searchingTime = 1300;
 
-        for (Purchase item : purchase)
-            System.out.println(item);
+            for (Airline airline : list) {
+                if (airline.getDestination().equals(searchingDestination)) {
+                    listSearchingDestination.add(airline);
+                }
+                for (int i = 0; i < airline.getWeekDays().length; i++) {
+                    if (airline.getWeekDays()[i].equals(searchingWeekDay)) {
+                        listSearchingWeekDay.add(airline);
+                        if (airline.getDepartureTime() > 1300) {
+                            listSearchingWeekDayWithTime.add(airline);
+                        }
+                    }
+                }
+            }
 
-        System.out.println(maxCostDay(purchase));
-        System.out.println(mondayCost(purchase));
-        System.out.println(averageCost(purchase));
+            System.out.println("List of flights for " + searchingDestination + " destination:");
+            printCollection(listSearchingDestination);
 
-        Arrays.sort(purchase);
-        System.out.println("Sorted by count:");
-        for (Purchase item : purchase)
-            System.out.println(item);
+            System.out.println("List of flights for " + searchingWeekDay + ":");
+            printCollection(listSearchingWeekDay);
 
-        Arrays.sort(purchase, new  SortedByCost());
-        System.out.println("Sorted by cost:");
-        for (Purchase item : purchase)
-            System.out.println(item);
+            System.out.println("List of flights for " + searchingWeekDay + " and searching time " + Utility.toConvert(searchingTime) + ":");
+            printCollection(listSearchingWeekDayWithTime);
 
-        Arrays.sort(purchase, new SortedByName());
-        System.out.println("Sorted by name:");
-        for (Purchase item : purchase)
-            System.out.println(item);
+            Collections.sort(list);
+
+            try {
+                FileWriter writer = new FileWriter(OUTPUT, false);
+                for (Airline airline : list) {
+                    writer.write(airline + "\n");
+                }
+                writer.flush();
+                writer.close();
+            } catch (IOException e2) {
+                System.err.println("Some problems with output");
+            }
+        } catch (IOException e1) {
+            System.err.println("Some problems with input");
+        } finally {
+            if (sc != null) {
+                sc.close();
+            }
+        }
     }
 }
